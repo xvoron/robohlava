@@ -1,0 +1,76 @@
+{
+    
+    "init":{
+        "general": [""]},
+
+    "wait":{
+       "general":[
+      "Jmenuji se lůzr ... ",
+      "Jsem fakt teda lůzr...",
+      "Asi můj život nikoho nezajima ... "]
+},
+    "search": {
+       "general": ["Je tady nekdo?"]}, 
+
+    "sleep":{
+        "general": [""]},
+
+    "greeting":{
+     "number_of_person": "No vás tady teda je .... {} ",
+     "one_person": "Co jste zač? Další čumil, který přišel do muzea jednou za světelnej rok? A proč vlastně?",
+     "telefon":"Fotíte mě? A dáte to na instagram?",
+     "vek": "Zdarec, tak tobě bude tak 48 let, no vypadáš skoro na šedesát?",
+     "kid_female": "Ahoj Zuzanko, nebo Karolínko, nebo ... jak se menuješ?",
+     "batoh": "Nosíte batoh? jste student nebo turista?",
+     "kids": "Máte děti? A kde je máte? Rozeznávám podle energie malé, co víří vyduch a velké, co se zahřívají mobilem.",
+     "name": "Jak se jmenujete? cože ? nerozumím vám ... to je ale blbý jméno. Po kom to máte?",
+     "dialog": "Jestli čekáte intelegentní dialog, tak tady jste špatně. Nejsem pepper. To musíte jít na václavské náměstí nebo na letiště. Mí vývojáři jsou mnohem hůře placeni. Já poskytuju pouze dobré radz. Záchody jsou vzadu vlevo.",
+     "kravata": "Jste takový officialní vždy, nebo nositě kravatu jen vyjměčně",
+     "general": [
+
+       "Přijde vám ta výstava zajímavá?Mně přijde, že je nás tady moc.Podle mne, bych úplně stačil já a Josef z Machinária.",
+       "Byli jste už v přízemí? Měli jste jít prvně do přízemí, proč nejdete podle barev? a od čeho si myslíte, že tady ty značky jsou?",
+       "Trasy máte na zemi nalepené. To je podlahová grafika. Víte, kolik to stálo peněz to tam nalepit?",
+       "Co sem lezete, nechte mne umřít v klidu, mám už svoje za sebou."
+     ],
+     "more_people": "Nešpitejte si, není to slušné. Tedy mne se to netýká, je mi jedno co si špitáte, ale naprogramovali mne, abych vás na to upozornil.",
+     "pay": "Zaplatili jste vstupné? Nebo jste vklouzli zadním vchodem?"
+   },
+
+    "games": {
+        "general": ["Nejaka věta kterou ješte tady nemam ..."],
+        "start":[
+            "No, když už spolu mluvíme, tak ... mám pro tebe neodolatelnou nabídku. Máš zájem o literaturu? Něco ti přečtu? Nebo chceš vyzkoušet jestli poznám banán vod ježka? Vyber si na displeji!"],
+        "choice":[
+            "Nic sis nevybral, není zájem? Vyber něco na displeji, dělej!"]
+    },
+    "book": {
+        "fail":["Nevidím žadnou stranku, mužeš zkusit jeste jednou, Nebo vyzkouset neco jineho"],
+        "success":["Jo Jo už to vidím ... {}"],
+        "general":[""],
+
+        "other":[
+            "Řekni mi, co čteš a já ti řeknu kdo jsi! Vyber si jednu knížku a ukaž mi nějakou stránku.",
+            "Jestli číst neumíš, můžu ti to přečíst já. Vyber si jednu knížku a ukaž mi nějakou stránku.",
+            "Můžu být předčítačem textů aniž bych vám vnucoval jejich interpretaci, to už je dneska skoro zázrak. Vyber si jednu knížku a ukaž mi nějakou stránku.",
+            "Už tě to nebaví, tak to je teda smutná věc.... "
+    ]},
+    "yolo":{
+        "general": [""],
+        "start": [
+            "Tak. Je to tady. Jsem kapku nervózní. Vyber jeden předmět a ukaž mi ho. Schválně jestli uhodnu co to je!",
+            "Máš něco v baťohu? Ukaž mi to. Schválně jestli uhodnu co to je!"
+        ],
+        "answer":[ 
+            "Myslím, že to je {}.",
+            "Jak vidíš za mnou na obrazovce, na 80% je to jabko, na 12% klíče, ale pravdu, pravdu se nikdy nedozvíme...."
+        ]
+    },
+    "professor":{
+        "general":[""]
+
+    },
+    "noname":{
+        "general":[""]
+    }
+}

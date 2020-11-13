@@ -1,0 +1,13 @@
+numpy
+scipy
+collections-extended
+Pillow==2.2.2
+regex
+pyserial
+pyttsx3
+opencv-python3
+PyQt5
+pyserial
+pytesseract
+pyrealsense
+pyrealsense2
