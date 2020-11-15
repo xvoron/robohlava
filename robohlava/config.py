@@ -10,9 +10,9 @@
 #--------------------------------------------------------------
 # FLAGS
 #--------------------------------------------------------------
-flag_arduino = True
-flag_voice = True
-flag_realsense = True
+flag_arduino = False
+flag_voice = False
+flag_realsense = False
 
 #--------------------------------------------------------------
 # CONSTANTS
@@ -48,7 +48,8 @@ greeting_yolo_ratio = 20
 
 # Games
 games_maximum_stage_choice_btn = 5
-games_change_person_text = ['Pokud jseš tak pomaly, tak zkusím nekoho jíneho ... ale nevýlučuju, že to znovu budeš ty ...']
+games_change_person_text = ['Pokud jseš tak pomaly, tak zkusím nekoho \
+        jíneho ... ale nevýlučuju, že to znovu nebudeš ty ...']
 
 #--------------------------------------------------------------
 # TEXTS
@@ -94,3 +95,16 @@ timer_yolo2games = 150
 #--------------------------------------------------------------
 stage_greeting2games = 4
 
+
+#--------------------------------------------------------------
+# COLORS BGR format for openCV
+#--------------------------------------------------------------
+color_yolo = (18, 78, 35)               ##234e12 
+color_mini = (18, 78, 35)               ##234e12 
+color_center_circle = (36, 155, 69)     ##459b24
+color_tracking_person = (0, 0, 224)     ##E00000
+color_person = (18, 78, 35)             ##234e12
+
+
+# Colors:
+# (12, 20, 146)              ##92140C

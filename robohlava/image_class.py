@@ -6,10 +6,17 @@ import re
 import platform
 from PIL import Image
 
-from robohlava.camera import Camera
-from robohlava.person_class import Persons_class
-from robohlava.detected_objects import DetectedObjects
-import robohlava.config as conf
+
+if __name__ == "__main__":
+    from camera import Camera
+    from person_class import Persons_class
+    from detected_objects import DetectedObjects
+    import config as conf
+else:
+    from robohlava.camera import Camera
+    from robohlava.person_class import Persons_class
+    from robohlava.detected_objects import DetectedObjects
+    import robohlava.config as conf
 
 
 class ImageProcessing:
@@ -143,7 +150,7 @@ class ImageProcessing:
 
         print("[INFO] Models was load")
 
-        """TODO Centroid Tracker initialization"""
+        """Person class + tracker algorithm"""
         self.tracker = Persons_class()
 
     def book_read(self):
@@ -199,7 +206,6 @@ class ImageProcessing:
         return self.book_text
 
     def obj_det_yolo(self):
-        # TODO
         text = []
         # Load Yolo
         classes = []
@@ -213,7 +219,7 @@ class ImageProcessing:
             classes = [line.strip() for line in f.readlines()]
         layer_names = self.yolo_net.getLayerNames()
         output_layers = [layer_names[i[0] - 1] for i in self.yolo_net.getUnconnectedOutLayers()]
-        colors = np.random.uniform(0, 255, size=(len(classes), 3))
+        #colors = np.random.uniform(0, 255, size=(len(classes), 3))
         # Loading image
         # img = cv2.resize(self.rgb_original, None, fx=0.4, fy=0.4)
         height, width, channels = self.rgb_original.shape
@@ -248,9 +254,11 @@ class ImageProcessing:
             if i in indexes:
                 x, y, w, h = boxes[i]
                 label = str(classes[class_ids[i]])
-                color = colors[i]
-                cv2.rectangle(self.rgb_copy_cv, (x, y), (x + w, y + h), color, 2)
-                cv2.putText(self.rgb_copy_cv, label, (x, y + 30), font, 3, color, 3)
+                color_yolo = conf.color_yolo
+                cv2.rectangle(self.rgb_copy_cv, (x, y), (x + w, y + h),
+                        color_yolo, 1)
+                cv2.putText(self.rgb_copy_cv, label, (x, y + 30), font, 2,
+                        color_yolo, 1)
                 text.append(label)
                 obj_img = self.rgb_original[y:y+h, x:x+w]
                 self.detected_objects.append(label, boxes[i], confidences[i], obj_img)
@@ -346,7 +354,6 @@ class ImageProcessing:
         return self.centroid_to_arduino
 
     def draw_objects_persons(self):
-        self.img_mini_persons_objects = np.zeros(np.shape(self.rgb_original))
         #TODO img to qt_label
         """ 640 x 480
             480/2 = 240 is height
@@ -358,11 +365,13 @@ class ImageProcessing:
             |   |   |   |   |
             +---+---+---+---+
         """
+        color_mini = conf.color_mini
         width = 160
         height = 240
         if self.PersonsObjects == None:
-            return
+            return np.zeros(1)
         else:
+            img_mini = np.zeros(np.shape(self.rgb_original), np.uint8)
             if len(list(self.PersonsObjects.values())):
                 for i, person in enumerate(list(self.PersonsObjects.values())):
                     if i > 4: # where 4 is maximum images per width frame
@@ -370,7 +379,7 @@ class ImageProcessing:
                     sX, sY, eX, eY = person.box
                     face_img = self.rgb_original[sY:eY, sX:eX]
                     face_img = cv2.resize(face_img, (width, height), interpolation=cv2.INTER_CUBIC)
-                    self.img_mini_persons_objects[0:0 + height, i*width:(i+1)*width] = face_img[0:height, 0:width]
+                    img_mini[0:height, i*width:(i+1)*width] = face_img[0:height, 0:width]
 
         if not self.detected_objects.objects_list == []:
             i = 0
@@ -381,10 +390,10 @@ class ImageProcessing:
                     continue
                 obj_img = cv2.resize(obj.image, (width, height), interpolation=cv2.INTER_CUBIC)
                 cv2.putText(obj_img, str(str(obj.label) + "{:.2f}%".format(obj.confidence)), (5, 30),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 139), 2)
-                self.img_mini_persons_objects[240:240 + height, i*width:(i+1)*width] = obj_img[0:height, 0:width]
+                            cv2.FONT_HERSHEY_PLAIN, 1, color_mini, 2)
+                img_mini[240:2*height, i*width:(i+1)*width] = obj_img[0:height, 0:width]
                 i += 1
-        cv2.imshow("Mini", self.img_mini_persons_objects)
+        return img_mini
 
     def persons_draw(self):
         for person in list(self.PersonsObjects.values()):
@@ -392,10 +401,10 @@ class ImageProcessing:
                     float(person.age_confidence)))
 
             if person.tracking_person:
-                color = (0, 0, 255)
+                color = conf.color_tracking_person
                 text_tracking = "Tracking person"
             else:
-                color = (255, 0, 0)
+                color = conf.color_person
                 text_tracking = ""
 
             cv2.rectangle(self.rgb_copy_cv, (person.box[0], person.box[1]),
@@ -416,47 +425,15 @@ class ImageProcessing:
         dist, _, _, _ = cv2.mean(depth)
         return dist
 
-    def print_info(self, info):
-
-        color = (0, 0, 139)
-
-        text_num_persons = "Number of persons: {}".format(self.tracker.actual_number_of_person())
-        cv2.putText(self.final_image, text_num_persons, (1000, 600),
-                cv2.FONT_HERSHEY_PLAIN, 2, color, 2)
-
-        voice_text = "Voice: "
-        for string in info["text_voice"]:
-            voice_text += string
-
-        cv2.putText(self.final_image, voice_text, (1000, 750),
-                    cv2.FONT_HERSHEY_PLAIN, 1, color, 1)
-
-        actual_state = "Actual state: " + info["actual_state"]
-        cv2.putText(self.final_image, actual_state, (1000, 650),
-                    cv2.FONT_HERSHEY_PLAIN, 2, color, 2)
-
-    def information_to_rgb(self, info):
-        #TODO Rewrite to state_class
-        person_number = "Persons in frame: {}".format(self.tracker.actual_number_of_person())
-        actual_state = "Actual state: {}".format(info["actual_state"])
-        return person_number, actual_state
-
-
-    def process_final_frame(self):
-        color = (0, 0, 139)
-        self.draw_center_circle()
-        self.final_image = np.hstack((self.rgb_copy_cv, self.depth_colorized))
-        self.blank_image = np.zeros(self.final_image.shape, np.uint8)
-        self.final_image = np.vstack((self.final_image, self.blank_image))
-        self.final_image = cv2.resize(self.final_image, (1920, 1080), interpolation=cv2.INTER_CUBIC)
-
     def show_frame(self):
+        # legacy
         cv2.namedWindow('frame', cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty("frame", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.imshow("frame", self.final_image)
 
     def draw_center_circle(self):
-        cv2.circle(self.rgb_copy_cv, (int(self.width/2), int(self.height/2)), 50, (0, 0, 139), 2)
+        cv2.circle(self.rgb_copy_cv, (int(self.width/2),
+            int(self.height/2)), 50, conf.color_center_circle, 2)
 
     def draw_book_rectangle(self):
         cv2.rectangle(self.rgb_copy_cv,(50, 100), (int(self.width-50),
@@ -495,13 +472,12 @@ class ImageProcessing:
 
         self.objects_yolo = []
         self.get_frames()
-        if self.img_mini_persons_objects is None:
-            self.img_mini_persons_objects = np.zeros(np.shape(self.rgb_original)).astype('float32')
+        mini = self.blank_image = np.zeros(self.rgb_original.shape, np.uint8)
 
         if flags["img_arduino_track"]:
             self.face_age_gender_detector()
             self.persons_draw()
-            #self.draw_objects_persons()
+            mini = self.draw_objects_persons()
             if flags["change_person"]:
                 self.person_tracking(change_person=True)
             else:
@@ -510,7 +486,6 @@ class ImageProcessing:
         else:
             persons = []
         if flags["img_yolo"]:
-            self.detected_objects.clear()
             self.obj_det_yolo()
 
         self.final_image = np.hstack((self.rgb_copy_cv, self.depth_colorized))
@@ -525,7 +500,6 @@ class ImageProcessing:
         objects_class = self.detected_objects
         if flags["disp_show_main"]:
             self.process_final_frame()
-            #self.print_info(info)
             #self.show_frame()
         else:
             #self.show_init_window()
@@ -533,34 +507,25 @@ class ImageProcessing:
             pass
 
 
-        #self.draw_objects_persons()
-        if self.TIMER > 20:
+        if self.TIMER >= 300 :
             self.detected_objects.clear()
             self.TIMER = 0
 
 
         self.TIMER += 1
-        return (self.rgb_copy_cv, self.depth_colorized,
-                self.img_mini_persons_objects, persons, objects, self.book_text)
+        return (self.rgb_copy_cv, self.depth_colorized, mini, persons, objects, self.book_text)
 
 
 if __name__ == "__main__":
     print("Modul  | {0} | ---> executed".format(__name__))
     image_process = ImageProcessing()
-    flags_image = dict(
-        tracking=False,
-        book=True,
-        yolo=False,
-        change_person=False,
-        display_on=True
-    )
-
-    info = {
-        "text_voice": "test text",
-        "actual_state": "test"
-    }
+    flags = {"img_arduino_track" : True,
+            "img_yolo" : True,
+            "change_person" : False,
+            "img_book": False,
+            "disp_show_main": False}
     while True:
-        image_process.update(flags_image, info)
+        image_process.update(flags)
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"):

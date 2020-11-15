@@ -65,7 +65,7 @@ class RobohlavaBackend(QObject):
             convert_2Qt_format_depth = QImage(depth_img.data, w, h, bytes_per_line, QImage.Format_RGB888)
             p_depth = convert_2Qt_format_depth.scaled(1280, 960, Qt.KeepAspectRatio)
 
-            mini_img = cv2.cvtColor(depth, cv2.COLOR_BGR2RGB)
+            mini_img = cv2.cvtColor(mini, cv2.COLOR_BGR2RGB)
             h, w, ch = mini_img.shape
             bytes_per_line = ch * w
             convert_2Qt_format_mini = QImage(mini_img.data, w, h, bytes_per_line, QImage.Format_RGB888)
@@ -215,7 +215,6 @@ class MainWindow(QWidget):
         self.robohlava.moveToThread(self.th)
         self.th.started.connect(self.robohlava.run)
         self.th.start()
-
         self.show()
 
 
@@ -310,7 +309,7 @@ class TouchScreen(QWidget):
         self.setLayout(self.ui_layout_v)
         #self.resize(1920, 1080)
         self.move(0, 1100)
-        self.showFullScreen() # Full screen only when everything is done
+        #self.showFullScreen() # Full screen only when everything is done
         self.show()
 
 

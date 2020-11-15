@@ -122,7 +122,7 @@ class RobohlavaCore:
         self.triggers_process(triggers)
 
         #self.actions_process(actions)
-        if self.Gtimer >= 100:
+        if self.Gtimer >= 1000:
             self.Gtimer = 0
 
 
@@ -135,9 +135,6 @@ class RobohlavaCore:
                    'num_persons': len(persons)}
 
         return data2qt
-
-
-
 
 
     def persons_process(self, persons):
@@ -224,7 +221,8 @@ class RobohlavaCore:
                 if self.state_machine.current_state.name in ['Yolo', 'Greeting']:
                     self.objects_process(value)
                 else:
-                    self.object_memory = []
+                    if self.Gtimer % 20 == 0:
+                        self.object_memory = []
 
 
     def actions_process(self):

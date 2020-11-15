@@ -1,7 +1,10 @@
 import numpy as np
 import pyrealsense2 as rs
 import cv2
-import robohlava.config as conf
+try:
+    import robohlava.config as conf
+except:
+    import config as conf
 
 
 class Camera:
