@@ -110,7 +110,8 @@ class Wait(State):
 
         actions["voice"] = self.voice()
 
-        actions["img_arduino_track"] = True
+        actions["track"] = True
+        actions["img_face"] = True
 
         self.timer_next()
         return actions
@@ -131,6 +132,7 @@ class Search(State):
         self.transitions.append(self.transition1)
         self.transitions.append(self.transition2)
 
+
     def get_entry_action(self):
         print(self.text)
         actions = {'voice': self.voice()}
@@ -141,7 +143,8 @@ class Search(State):
     def get_action(self):
         actions = {}
 
-        actions["img_arduino_track"] = True
+        actions["track"] = True
+        actions["img_face"] = True
         if self.timer() == int(conf.timer_search2sleep*1/4):
             print("[INFO] Turn right")
             actions['arduino_turn'] = conf.arduino_right.copy()
@@ -161,7 +164,7 @@ class Sleep(State):
         super().__init__(*args)
 
         self.transition1 = Transition(target_state=Wait,
-                                    conditions=['local_timer', 200],
+                                    conditions=['local_timer', conf.timer_sleep2wait],
                                     state={'timer':self.timer})
         self.transition2 = Transition(target_state=Greeting,
                                     conditions=['person'],
@@ -176,7 +179,8 @@ class Sleep(State):
 
     def get_action(self):
         actions = {}
-        actions['img_arduino_track'] = True
+        actions['track'] = True
+        actions['img_face'] = True
 
         self.timer_next()
         return actions
@@ -206,10 +210,15 @@ class Greeting(State):
 
     def get_action(self):
         actions = {}
-        actions['img_arduino_track'] = True
+        actions['track'] = True
+        actions['img_face'] = True
         if self.stage() == 0:
-            pass
-        if self.stage() == 1 or self.stage() == 2 or self.stage() == 3:
+            actions['img_age'] = True
+            actions['img_gender'] = True
+        if self.stage() == 1:
+            actions['img_age'] = True
+            actions['img_gender'] = True
+        if self.stage() == 2 or self.stage() == 3:
             if self.timer() % conf.greeting_yolo_ratio == 0:
                 actions['img_yolo'] = True
             else:
@@ -285,12 +294,13 @@ class Games(State):
     def get_entry_action(self):
         self.timer_reset()
         self.stage_reset()
-        actions = {"voice": self.text['start']}
+        actions = {}
         return actions
 
     def get_action(self):
         actions = {}
-        actions['img_arduino_track'] = True
+        actions['track'] = True
+        actions['img_face'] = True
         actions['voice'] = self.voice()
         self.timer_next()
         return actions
@@ -298,7 +308,7 @@ class Games(State):
     @State.voice_decorator
     def voice(self):
         if self.stage() == 0:
-            text = random.sample(self.text['general'], 1)
+            text = self.text['start']
             self.stage_add()
         elif self.stage() == 1:
             text = random.sample(self.text['general'], 1)
@@ -344,7 +354,7 @@ class Book(Game):
         self.timer_reset()
         self.stage_reset()
         text = random.sample(self.text['other'], 1)
-        return {'voice' : text}
+        return {'voice': text}
 
     def get_action(self):
         actions = {}

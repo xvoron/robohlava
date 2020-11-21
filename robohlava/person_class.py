@@ -192,10 +192,18 @@ class Person_class:
         self.area = self.area_calc()
         self.centroid = centroid
         self.ID = None
-        self.gender_list = [gender]
-        self.age_list = [age[0]]
-        self.age, self.age_confidence = age
-        self.gender = gender
+        if gender is not None:
+            self.gender = gender
+            self.gender_list = [gender]
+        else:
+            self.gender_list = []
+            self.gender = ''
+        if age is not None:
+            self.age_list = [age[0]]
+            self.age, self.age_confidence = age
+        else:
+            self.age_list = []
+            self.age, self.age_confidence = '', 0 
         self.image = img
         self.tracking_person = False
 
@@ -203,15 +211,22 @@ class Person_class:
         self.box = box
         self.xmin, self.ymin, self.xmax, self.ymax = box
         self.centroid = centroid
-        self.age_list.append(age[0])
-        self.age_confidence = age[1]
-        self.gender_list.append(gender)
+        if age is not None:
+            self.age_list.append(age[0])
+        if age_confidence is not None:
+            self.age_confidence = age[1]
+        else:
+            self.age_confidence = 0
+        if gender is not None:
+            self.gender_list.append(gender)
         self.image = img
         self.age, self.gender = self.calc_average_data()
         self.area = self.area_calc()
 
         if len(self.age_list) > 10:
             self.age_list.pop(0)
+
+        if len(self.gender_list) > 10:
             self.gender_list.pop(0)
 
     def get_image(self):

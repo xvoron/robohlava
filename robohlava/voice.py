@@ -12,9 +12,8 @@ class Voice:
         """Voice engine initialization
         """
         self.engine = pyttsx3.init()
-        self.engine.setProperty('voice', 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft'
-                                         '\Speech\Voices\Tokens\MSTTS_V110_csCZ_Jakub')
-        self.engine.setProperty('rate', 130)  # setting up new voice rate
+        self.engine.setProperty('voice', 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\MSTTS_V110_csCZ_Jakub')
+        self.engine.setProperty('rate', 200)  # setting up new voice rate
         self.t_children = Thread()
         self.t_parent = Thread()
         self.q = queue.Queue()
@@ -47,25 +46,13 @@ class Voice:
         self.engine.stop()
 
 
-# Threading Class
-class Threader(Thread):
-    def __init__(self, *args, **kwargs):
-        Thread.__init__(self, *args, **kwargs)
-        self.daemon = True
-        self.start()
-
-    def run(self):
-        tts_engine = pyttsx3.init()
-
-        engine = pyttsx3.init()
-        engine.setProperty('voice', 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft'
-                                    '\Speech\Voices\Tokens\MSTTS_V110_csCZ_Jakub')
-        engine.setProperty('rate', 130)  # setting up new voice rate
-        tts_engine.say(self._args)
-        tts_engine.runAndWait()
-
-
 if __name__ == "__main__":
     print("Modul  | {0} | ---> executed".format(__name__))
+    import time
+    voice = Voice()
+    time.sleep(1)
+    voice.say("ahoj jak se maš?")
+    voice.terminate()
+
 else:
     print("Modul  | {0} | ---> imported".format(__name__))

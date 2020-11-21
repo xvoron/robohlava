@@ -9,7 +9,7 @@ MOTOR_X         0_____x_____195
                       0
 """
 
-from robohlava.voice import Voice, Threader
+from robohlava.voice import Voice
 import threading
 import math
 import time
@@ -25,7 +25,7 @@ class Robohlava():
         self.flag_voice = conf.flag_voice
         self.flag_arduino = conf.flag_arduino
         self.TIMER = 0
-        self.actual_x, self.actual_y  = conf.arduino_base.copy()
+        self.actual_x, self.actual_y = conf.arduino_base.copy()
         if self.flag_voice:
             self.voice = Voice()
             # self.voice.completed.set()

@@ -66,7 +66,7 @@ class RobohlavaCore:
                     'cancel'    : False
                     }
 
-    actions_list = {'img_arduino_track' : False,
+    actions_list = {'track'             : False,
                     'img_face'          : False,
                     'img_gender'        : False,
                     'img_age'           : False,
@@ -121,10 +121,8 @@ class RobohlavaCore:
 
         self.triggers_process(triggers)
 
-        #self.actions_process(actions)
         if self.Gtimer >= 1000:
             self.Gtimer = 0
-
 
         self.Gtimer += 1
         data2qt = {'rgb'        : rgb,
@@ -136,10 +134,9 @@ class RobohlavaCore:
 
         return data2qt
 
-
     def persons_process(self, persons):
         centroid = None
-        if self.actions['img_arduino_track']:
+        if self.actions['track']:
             if persons:
                 for person in persons:
                     if person.tracking_person:
@@ -173,7 +170,6 @@ class RobohlavaCore:
         for w in self.object_memory:
             if (w not in les) and w !="person":
                 les.append(w)
-
         self.object_memory = les
 
 
@@ -189,7 +185,7 @@ class RobohlavaCore:
                 self.triggers['cancel'] = value[4]
 
             if key == 'person':
-                if self.actions['img_arduino_track']:
+                if self.actions['track']:
                     if any(value):
                         if self.locker_person.unlocked():
                             if self.count_person() > conf.num_person2track:
@@ -228,14 +224,14 @@ class RobohlavaCore:
     def actions_process(self):
         image_processing_flags = {}
         for key, value in self.actions.items():
-            if key == 'img_arduino_track':
+            if key == 'track':
                image_processing_flags[key] = value
             if key == 'img_face':
-                pass
+               image_processing_flags[key] = value
             if key == 'img_gender':
-                pass
+               image_processing_flags[key] = value
             if key == 'img_age':
-                pass
+               image_processing_flags[key] = value
             if key == 'img_yolo':
                 image_processing_flags[key] = value
             if key == 'change_person':
@@ -251,10 +247,19 @@ class RobohlavaCore:
             if key == 'arduino_turn':
                 if any(value):
                     self.robot.turn(value[0], value[1])
+
+            if key == 'yolo_end':
+                if value:
+                    text = conf.yolo_end_text + self.translated_objects()
+                    self.robot.say(text)
+                    self.voice_text = text
+                    break
+
             if key == 'voice':
                 if self.state_machine.current_state.name == 'Greeting':
                     stage = self.state_machine.current_state.stage()
                     if any(value):
+                        text = ''
                         if stage == 1:
                             if len(self.persons) > 1:
                                 text = value["more_people"]
@@ -315,11 +320,6 @@ class RobohlavaCore:
             if key == 'Gtimer_reset':
                 if value:
                     self.Gtimer = 0
-            if key == 'yolo_end':
-                if value:
-                    text = conf.yolo_end_text + self.translated_objects()
-                    self.robot.say(text)
-                    self.voice_text = text
 
         return image_processing_flags
 

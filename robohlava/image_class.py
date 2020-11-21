@@ -7,24 +7,15 @@ import platform
 from PIL import Image
 
 
-if __name__ == "__main__":
-    from camera import Camera
-    from person_class import Persons_class
-    from detected_objects import DetectedObjects
-    import config as conf
-else:
-    from robohlava.camera import Camera
-    from robohlava.person_class import Persons_class
-    from robohlava.detected_objects import DetectedObjects
-    import robohlava.config as conf
+from robohlava.camera import Camera
+from robohlava.person_class import Persons_class
+from robohlava.detected_objects import DetectedObjects
+import robohlava.config as conf
 
 
 class ImageProcessing:
     """Represent class for Image capturing processing
     """
-    #TODO new NN for gender and age detection.
-    #TODO research about faster yolo or mobileNet
-    #TODO CUDA is working??
 
     def __init__(self):
         self.width = conf.WIDTH
@@ -73,6 +64,8 @@ class ImageProcessing:
                                         r'\models\face_detector\weights.caffemodel')
 
             self.face_net = cv2.dnn.readNetFromCaffe(prototxt_path, weights_path)
+            self.face_net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+            self.face_net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
             """Define path and load YOLO object detection model"""
             prototxt_path = os.path.join(self.base_dir +
@@ -81,14 +74,16 @@ class ImageProcessing:
                                         r'\models\yolo\yolov3.weights')
 
             self.yolo_net = cv2.dnn.readNetFromDarknet(prototxt_path, weights_path)
+            self.yolo_net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+            self.yolo_net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
             """Define path and load face_detector2"""
-            prototxt_path = os.path.join(self.base_dir +
-                                         r'\models\face_detector_new\deploy.prototxt')
-            weights_path = os.path.join(self.base_dir +
-                                        r'\models\face_detector_new\res10_300x300_ssd_iter_140000.caffemodel')
+            #prototxt_path = os.path.join(self.base_dir +
+            #                             r'\models\face_detector_new\deploy.prototxt')
+            #weights_path = os.path.join(self.base_dir +
+            #                            r'\models\face_detector_new\res10_300x300_ssd_iter_140000.caffemodel')
 
-            self.face_net2 = cv2.dnn.readNet(prototxt_path, weights_path)
+            #self.face_net2 = cv2.dnn.readNet(prototxt_path, weights_path)
 
             """Define path and load age detector"""
             prototxt_path = os.path.join(self.base_dir +
@@ -96,7 +91,9 @@ class ImageProcessing:
             weights_path = os.path.join(self.base_dir +
                                         r'\models\age_detector\age_net.caffemodel')
 
-            self.age_net = cv2.dnn.readNet(prototxt_path, weights_path)
+            self.age_net = cv2.dnn.readNetFromCaffe(prototxt_path, weights_path)
+            self.age_net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+            self.age_net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
             """Define path and load gender detector"""
             prototxt_path = os.path.join(self.base_dir +
@@ -104,7 +101,9 @@ class ImageProcessing:
             weights_path = os.path.join(self.base_dir +
                                         r'\models\gender_detector\gender_net.caffemodel')
 
-            self.gender_net = cv2.dnn.readNet(prototxt_path, weights_path)
+            self.gender_net = cv2.dnn.readNetFromCaffe(prototxt_path, weights_path)
+            self.gender_net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+            self.gender_net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
         else:
 
@@ -256,9 +255,9 @@ class ImageProcessing:
                 label = str(classes[class_ids[i]])
                 color_yolo = conf.color_yolo
                 cv2.rectangle(self.rgb_copy_cv, (x, y), (x + w, y + h),
-                        color_yolo, 1)
+                        color_yolo, 2)
                 cv2.putText(self.rgb_copy_cv, label, (x, y + 30), font, 2,
-                        color_yolo, 1)
+                        color_yolo, 2)
                 text.append(label)
                 obj_img = self.rgb_original[y:y+h, x:x+w]
                 self.detected_objects.append(label, boxes[i], confidences[i], obj_img)
@@ -284,18 +283,17 @@ class ImageProcessing:
             list(self.PersonsObjects.values())[max_area_index].tracking_person = True
             return list(self.PersonsObjects.values())[max_area_index]
 
-    def face_age_gender_detector(self):
+    def face_age_gender_detector(self, age_flag=False, gender_flag=False):
         AGE_BUCKETS = ["(0-2)", "(4-6)", "(8-12)", "(15-20)", "(25-32)",
                        "(38-43)", "(48-53)", "(60-100)"]
         GENDER_BUCKETS = ["Male", "Female"]
         persons_data_collection = []
+        model_mean_values = (78.4263377603, 87.7689143744, 114.895847746)
 
         (h, w) = self.rgb_original.shape[:2]
-        cv_mean = (np.mean(self.rgb_original[0]), np.mean(self.rgb_original[1]),
-                np.mean(self.rgb_original[2]))
 
         face_blob = cv2.dnn.blobFromImage(cv2.resize(self.rgb_original,
-            (300, 300)), 1.0, (300, 300), cv_mean)
+                (300, 300)), 1.0, (300, 300), model_mean_values)
         self.face_net.setInput(face_blob)
         detections = self.face_net.forward()
 
@@ -313,34 +311,33 @@ class ImageProcessing:
                 continue
 
             try:
-                face_img = cv2.resize(face_img, (227, 227), cv2.INTER_LINEAR)
+                face_img = cv2.resize(face_img, (227, 227), interpolation=cv2.INTER_CUBIC)
             except:
                 continue
+            if age_flag:
 
-            cv_mean = (np.mean(face_img[0]), np.mean(face_img[1]),
-                       np.mean(face_img[2]))
+                age_blob = cv2.dnn.blobFromImage(face_img, 1, (227, 227),
+                                                 model_mean_values,
+                                                 swapRB=True)
 
-            #age_blob = cv2.dnn.blobFromImage(face_img, 1.0, (227, 227),
-            #                                 (78.4263377603, 87.7689143744, 114.895847746),
-            #                                 swapRB=False)
+                self.age_net.setInput(age_blob)
+                predictions = self.age_net.forward()
 
-            age_blob = cv2.dnn.blobFromImage(face_img, 1.0, (227, 227),
-                                             cv_mean,
-                                             swapRB=False)
+                i = predictions[0].argmax()
+                age = AGE_BUCKETS[i]
+                age_confidence = predictions[0][i]
+            else:
+                age = None
+                age_confidence = None
 
-            self.age_net.setInput(age_blob)
-            predictions = self.age_net.forward()
-            i = predictions[0].argmax()
-            age = AGE_BUCKETS[i]
-            age_confidence = predictions[0][i]
-
-            #gender_blob = cv2.dnn.blobFromImage(face_img, 1, (227, 227),
-            #                             (78.4263377603, 87.7689143744, 114.895847746), swapRB=False)
-            gender_blob = cv2.dnn.blobFromImage(face_img, 1, (227, 227),
-                                                cv_mean, swapRB=False)
-            self.gender_net.setInput(gender_blob)
-            gender_preds = self.gender_net.forward()
-            gender = GENDER_BUCKETS[gender_preds[0].argmax()]
+            if gender_flag:
+                gender_blob = cv2.dnn.blobFromImage(face_img, 1, (227, 227),
+                                                    model_mean_values, swapRB=False)
+                self.gender_net.setInput(gender_blob)
+                gender_preds = self.gender_net.forward()
+                gender = GENDER_BUCKETS[gender_preds[0].argmax()]
+            else:
+                gender = None
 
             d = {
                 "box": (startX, startY, endX, endY),
@@ -366,8 +363,8 @@ class ImageProcessing:
             +---+---+---+---+
         """
         color_mini = conf.color_mini
-        width = 160
-        height = 240
+        width = int(conf.WIDTH / 4)
+        height = int(conf.HEIGHT / 2)
         if self.PersonsObjects == None:
             return np.zeros(1)
         else:
@@ -384,21 +381,26 @@ class ImageProcessing:
         if not self.detected_objects.objects_list == []:
             i = 0
             for obj in (self.detected_objects.objects_list):
-                if i > 4: # where 4 is maximum images per width frame
+                if i > 4:   # where 4 is maximum images per width frame
                     break
                 if obj.label == "person":
                     continue
-                obj_img = cv2.resize(obj.image, (width, height), interpolation=cv2.INTER_CUBIC)
-                cv2.putText(obj_img, str(str(obj.label) + "{:.2f}%".format(obj.confidence)), (5, 30),
-                            cv2.FONT_HERSHEY_PLAIN, 1, color_mini, 2)
-                img_mini[240:2*height, i*width:(i+1)*width] = obj_img[0:height, 0:width]
-                i += 1
+                try:
+                    obj_img = cv2.resize(obj.image, (width, height), interpolation=cv2.INTER_CUBIC)
+                    cv2.putText(obj_img, str(str(obj.label) + "{:.2f}%".format(obj.confidence)), (5, 30),
+                                cv2.FONT_HERSHEY_PLAIN, 2, color_mini, 2)
+                    img_mini[height:2*height, i*width:(i+1)*width] = obj_img[0:height, 0:width]
+                    i += 1
+                except:
+                    pass
         return img_mini
 
     def persons_draw(self):
         for person in list(self.PersonsObjects.values()):
-            text = ("ID: {}, {}, {} {:.2f}%".format(str(person.ID), str(person.gender), str(person.age),
-                    float(person.age_confidence)))
+            if person.age_confidence == 0:
+                text = ("ID: {}, {}".format(str(person.ID), str(person.gender), str(person.age)))
+            else:
+                text = ("ID: {}, {}, {} {:.2f}%".format(str(person.ID), str(person.gender), str(person.age),                     float(person.age_confidence)*100))
 
             if person.tracking_person:
                 color = conf.color_tracking_person
@@ -427,9 +429,8 @@ class ImageProcessing:
 
     def show_frame(self):
         # legacy
-        cv2.namedWindow('frame', cv2.WND_PROP_FULLSCREEN)
-        cv2.setWindowProperty("frame", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-        cv2.imshow("frame", self.final_image)
+        cv2.imshow("rgb", self.rgb_copy_cv)
+        cv2.imshow("depth", self.depth_colorized)
 
     def draw_center_circle(self):
         cv2.circle(self.rgb_copy_cv, (int(self.width/2),
@@ -456,7 +457,10 @@ class ImageProcessing:
     def update(self, flags):
         """Main update function
         flags:
-            - tracking
+            - track
+            - face
+            - age
+            - gender
             - book
             - yolo
             - change_person
@@ -474,10 +478,9 @@ class ImageProcessing:
         self.get_frames()
         mini = self.blank_image = np.zeros(self.rgb_original.shape, np.uint8)
 
-        if flags["img_arduino_track"]:
-            self.face_age_gender_detector()
+        if flags["track"] or flags['img_face']:
+            self.face_age_gender_detector(flags['img_age'], flags['img_gender'])
             self.persons_draw()
-            mini = self.draw_objects_persons()
             if flags["change_person"]:
                 self.person_tracking(change_person=True)
             else:
@@ -497,17 +500,17 @@ class ImageProcessing:
             self.draw_center_circle()   # Draw center circle when its not a "book-mode"
 
         objects = self.objects_yolo
-        objects_class = self.detected_objects
+        #objects = self.detected_objects.objects_list
+
         if flags["disp_show_main"]:
-            self.process_final_frame()
-            #self.show_frame()
+            pass
         else:
-            #self.show_init_window()
-            #self.show_frame()
             pass
 
+        if flags["track"] or flags["img_yolo"]:
+            mini = self.draw_objects_persons()
 
-        if self.TIMER >= 300 :
+        if self.TIMER >= 300:
             self.detected_objects.clear()
             self.TIMER = 0
 
@@ -526,6 +529,8 @@ if __name__ == "__main__":
             "disp_show_main": False}
     while True:
         image_process.update(flags)
+        image_process.draw_objects_persons()
+        image_process.show_frame()
 
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"):

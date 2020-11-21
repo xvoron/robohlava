@@ -11,8 +11,8 @@
 # FLAGS
 #--------------------------------------------------------------
 flag_arduino = False
-flag_voice = False
-flag_realsense = False
+flag_voice = True
+flag_realsense = True
 
 #--------------------------------------------------------------
 # CONSTANTS
@@ -21,29 +21,31 @@ flag_realsense = False
 # Video
 WIDTH = 640
 HEIGHT = 480
+#WIDTH = 1280
+#HEIGHT = 720
 
 # Arduino
-arduino_base = [110, 50]
+arduino_base = [105, 50]    # [horizontal, vertical]
 arduino_right = [70, 50]
 arduino_left = [150, 50]
 arduino_padding = 20
 arduino_x_constant = 2
 arduino_y_constant = 5
 arduino_x_multiplicator = 0.03
-arduino_y_multiplicator = 0.2
+arduino_y_multiplicator = 0.1
 
 # Voice
-voice_padding_constant = 2
+voice_padding_constant = 2.5
 voice_padding_init = 60
 
-os = "Linux"
+os = "Windows"
 
 num_person2track = 20
 num_person2untrack = 20
 
 # Every N frames net-yolo will process
-yolo_ratio = 5
-greeting_yolo_ratio = 20
+yolo_ratio = 1
+greeting_yolo_ratio = 5
 
 
 # Games
@@ -78,6 +80,7 @@ timer_init2wait = 400
 timer_wait2search = 200
 timer_search2sleep = 200
 timer_greeting2games = 200
+timer_sleep2wait = 400
 
 # Games
 game_start_delay = 10
@@ -95,7 +98,6 @@ timer_yolo2games = 150
 #--------------------------------------------------------------
 stage_greeting2games = 4
 
-
 #--------------------------------------------------------------
 # COLORS BGR format for openCV
 #--------------------------------------------------------------
@@ -103,8 +105,7 @@ color_yolo = (18, 78, 35)               ##234e12
 color_mini = (18, 78, 35)               ##234e12 
 color_center_circle = (36, 155, 69)     ##459b24
 color_tracking_person = (0, 0, 224)     ##E00000
-color_person = (18, 78, 35)             ##234e12
+color_person = (255, 0, 0)             ##234e12
 
-
-# Colors:
+# Colors lib:
 # (12, 20, 146)              ##92140C
