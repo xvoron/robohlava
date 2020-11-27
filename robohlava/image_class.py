@@ -314,12 +314,11 @@ class ImageProcessing:
                 face_img = cv2.resize(face_img, (227, 227), interpolation=cv2.INTER_CUBIC)
             except:
                 continue
+            
             if age_flag:
-
                 age_blob = cv2.dnn.blobFromImage(face_img, 1, (227, 227),
                                                  model_mean_values,
                                                  swapRB=True)
-
                 self.age_net.setInput(age_blob)
                 predictions = self.age_net.forward()
 
@@ -397,10 +396,9 @@ class ImageProcessing:
 
     def persons_draw(self):
         for person in list(self.PersonsObjects.values()):
-            if person.age_confidence == 0:
-                text = ("ID: {}, {}".format(str(person.ID), str(person.gender), str(person.age)))
-            else:
-                text = ("ID: {}, {}, {} {:.2f}%".format(str(person.ID), str(person.gender), str(person.age),                     float(person.age_confidence)*100))
+            text = "ID: "
+            for data in person.print_data:
+                text += data + " "
 
             if person.tracking_person:
                 color = conf.color_tracking_person

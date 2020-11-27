@@ -1,6 +1,7 @@
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 import numpy as np
+import robohlava.config as conf
 
 
 class Persons_class:
@@ -192,42 +193,50 @@ class Person_class:
         self.area = self.area_calc()
         self.centroid = centroid
         self.ID = None
-        if gender is not None:
-            self.gender = gender
-            self.gender_list = [gender]
-        else:
-            self.gender_list = []
-            self.gender = ''
-        if age is not None:
-            self.age_list = [age[0]]
-            self.age, self.age_confidence = age
-        else:
-            self.age_list = []
-            self.age, self.age_confidence = '', 0 
-        self.image = img
+        self.age, self.age_confidence = age
+        self.gender = gender
         self.tracking_person = False
+
+        self.gender_list = []
+        self.age_list = []
+
+
+        self.formated_confidence = self.process_age_confidence(self.age_confidence)
+        self.data = [self.ID, self.gender, self.age, self.formated_confidence]
+        
+        self.print_data = [str(x) if x is not None else "" for x in self.data]
+
+
 
     def update(self, box, centroid, age, gender, img):
         self.box = box
         self.xmin, self.ymin, self.xmax, self.ymax = box
         self.centroid = centroid
-        if age is not None:
-            self.age_list.append(age[0])
-        if age_confidence is not None:
-            self.age_confidence = age[1]
-        else:
-            self.age_confidence = 0
         if gender is not None:
             self.gender_list.append(gender)
+        else:
+            self.gender_list = []
+        if age[0] is not None:
+            self.age_list.append(age[0])
+            self.age_confidence = age[1]
+        else:
+            self.age_confidence = None
+            self.age_list = []
+
         self.image = img
         self.age, self.gender = self.calc_average_data()
         self.area = self.area_calc()
 
-        if len(self.age_list) > 10:
+        if len(self.age_list) > conf.person_memory_length:
             self.age_list.pop(0)
 
-        if len(self.gender_list) > 10:
+        if len(self.gender_list) > conf.person_memory_length:
             self.gender_list.pop(0)
+
+        self.formated_confidence = self.process_age_confidence(self.age_confidence)
+        self.data = [self.ID, self.gender, self.age, self.formated_confidence]
+        
+        self.print_data = [str(x) if x is not None else "" for x in self.data]
 
     def get_image(self):
         pass
@@ -235,11 +244,30 @@ class Person_class:
     def process_image(self):
         pass
 
+    def process_age_confidence(self, confidence):
+        if confidence is not None:
+            if confidence > 0:
+                output = "{:.2f} %".format(float(confidence)*100)
+            else:
+                output = None
+        else:
+            output = None
+        return output
+
     def area_calc(self):
         return int((self.xmax - self.xmin) * (self.ymax - self.ymin))
 
     def calc_average_data(self):
-        return self.calc_mean(self.age_list), self.calc_mean(self.gender_list)
+        if any(self.age_list):
+            age_output = self.calc_mean(self.age_list)
+        else:
+            age_output = None
+        if any(self.gender_list):
+            gender_output = self.calc_mean(self.gender_list)
+        else:
+            gender_output = None
+
+        return age_output, gender_output
 
     def centroid_calc(self):
         return (int((self.xmax - self.xmin)/2) + self.xmin, int((self.ymax - self.ymin)/2) + self.ymin)

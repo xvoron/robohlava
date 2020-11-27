@@ -1,3 +1,5 @@
+# -*- coding:utf-8 -*-
+
 """
   ____ ___  _   _ _____ ___ ____   _____ ___ _     _____
  / ___/ _ \| \ | |  ___|_ _/ ___| |  ___|_ _| |   | ____|
@@ -38,20 +40,25 @@ arduino_y_multiplicator = 0.1
 voice_padding_constant = 2.5
 voice_padding_init = 60
 
+# OS
 os = "Windows"
 
+# Number of frames to start tracking/untracking person after appear/disappear
 num_person2track = 20
 num_person2untrack = 20
 
 # Every N frames net-yolo will process
 yolo_ratio = 1
-greeting_yolo_ratio = 5
+greeting_yolo_ratio = 1
 
 
 # Games
 games_maximum_stage_choice_btn = 5
-games_change_person_text = ['Pokud jseš tak pomaly, tak zkusím nekoho \
-        jíneho ... ale nevýlučuju, že to znovu nebudeš ty ...']
+games_change_person_text = ['Proč jseš tak pomaly, tak zkusím nekoho \
+        jíneho ... ale nevylučuju, že to znovu nebudeš ty ...']
+
+# Person class properties
+person_memory_length = 20
 
 #--------------------------------------------------------------
 # TEXTS
@@ -71,12 +78,12 @@ btn2_text = "Not implemented yet"
 btn3_text = "Yolo mode"
 btn4_text = "Not implemented yet"
 
-button_cancel_text = ["Už te to nebaví? Vyber si neco jineho..."]
+button_cancel_text = ["Už tě to nebaví? Vyber si neco jineho..."]
 
 #--------------------------------------------------------------
 # TIMERS
 #--------------------------------------------------------------
-timer_init2wait = 400
+timer_init2wait = 50
 timer_wait2search = 200
 timer_search2sleep = 200
 timer_greeting2games = 200
