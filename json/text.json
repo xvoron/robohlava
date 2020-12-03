@@ -24,7 +24,7 @@
      "batoh": "Nosíte batoh? jste student nebo turista?",
      "kids": "Máte děti? A kde je máte? Rozeznávám podle energie malé, co víří vyduch a velké, co se zahřívají mobilem.",
      "name": "Jak se jmenujete? cože ? nerozumím vám ... to je ale blbý jméno. Po kom to máte?",
-     "dialog": "Jestli čekáte intelegentní dialog, tak tady jste špatně. Nejsem pepper. To musíte jít na václavské náměstí nebo na letiště. Mí vývojáři jsou mnohem hůře placeni. Já poskytuju pouze dobré radz. Záchody jsou vzadu vlevo.",
+     "dialog": "Jestli čekáte intelegentní dialog, tak tady jste špatně. Nejsem pepper. To musíte jít na václavské náměstí nebo na letiště. Mí vývojáři jsou mnohem hůře placeni. Já poskytuju pouze dobré rady. Záchody jsou vzadu vlevo.",
      "kravata": "Jste takový officialní vždy, nebo nositě kravatu jen vyjměčně",
      "general": [
 
@@ -45,9 +45,10 @@
             "Nic sis nevybral, není zájem? Vyber něco na displeji, dělej!"]
     },
     "book": {
-        "fail":["Nevidím žadnou stranku, mužeš zkusit jeste jednou, Nebo vyzkouset neco jineho"],
         "success":["Jo Jo už to vidím ... {}"],
-        "general":[""],
+        "general":["Přečtu ti moji nejoblíbenější čast knihy ..."],
+        "end":["Tato čast se mi velmí libí... Bavílo tě to?"],
+        "cancel":["Dobře jak chceš..."],
 
         "other":[
             "Řekni mi, co čteš a já ti řeknu kdo jsi! Vyber si jednu knížku a ukaž mi nějakou stránku.",

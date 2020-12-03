@@ -12,7 +12,7 @@
 #--------------------------------------------------------------
 # FLAGS
 #--------------------------------------------------------------
-flag_arduino = False
+flag_arduino = True
 flag_voice = True
 flag_realsense = True
 
@@ -35,6 +35,7 @@ arduino_x_constant = 2
 arduino_y_constant = 5
 arduino_x_multiplicator = 0.03
 arduino_y_multiplicator = 0.1
+arduino_com_port = 'COM3'
 
 # Voice
 voice_padding_constant = 2.5
@@ -64,6 +65,11 @@ person_memory_length = 20
 # TEXTS
 #--------------------------------------------------------------
 
+# RUR
+text_rur_max = 116774
+text_rur_padding = 1000
+text_rur_length = 500
+
 # Init
 init_phrase = "Jsem hotov k praci"
 
@@ -72,10 +78,11 @@ yolo_end_text = "Vidím před sebou ... "
 
 
 # Buttons
-info_label_default_text = "Wait... until Luzer gives you permission"
-btn1_text = "Reading Book"
+info_label_default_text = "Vydržte než to dokončím!"
+info_label_game_text = "Vyber si na obrazovce!"
+btn1_text = "Čtení textu!"
 btn2_text = "Not implemented yet"
-btn3_text = "Yolo mode"
+btn3_text = "Poznám co ukážeš!"
 btn4_text = "Not implemented yet"
 
 button_cancel_text = ["Už tě to nebaví? Vyber si neco jineho..."]
@@ -83,11 +90,12 @@ button_cancel_text = ["Už tě to nebaví? Vyber si neco jineho..."]
 #--------------------------------------------------------------
 # TIMERS
 #--------------------------------------------------------------
-timer_init2wait = 50
+timer_init2wait = 400
 timer_wait2search = 200
 timer_search2sleep = 200
 timer_greeting2games = 200
 timer_sleep2wait = 400
+timer_book2game = 200
 
 # Games
 game_start_delay = 10

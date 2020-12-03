@@ -13,6 +13,7 @@ print("-------------------Import start-------------------\n")
 import os
 # General packages import
 import sys
+import time
 
 import cv2
 from PyQt5.QtCore import (QThread, Qt, pyqtSignal, pyqtSlot, QSize,
@@ -85,6 +86,9 @@ class RobohlavaBackend(QObject):
                 self.state_information.emit(str(self.current_state))
             self.information.emit([num_persons, self.current_state])
 
+    def terminate_close(self):
+        self.core.terminate()
+
 
 class MainWindow(QWidget):
     """Main window displaying RGB, Depth and details frames"""
@@ -156,6 +160,7 @@ class MainWindow(QWidget):
         pass
 
     def initUI(self):
+
         self.setWindowTitle("Main window")
         self.resize(1920, 1080)
 
@@ -205,6 +210,7 @@ class MainWindow(QWidget):
 
         self.touch_screen = TouchScreen()
         self.touch_screen.state_from_btn.connect(self.process_state_from_touchscreen)
+        self.touch_screen.terminate_signal.connect(self.terminate_close_all)
 
         self.robohlava = RobohlavaBackend()
         self.robohlava.change_pixmap.connect(self.setImage)
@@ -215,7 +221,27 @@ class MainWindow(QWidget):
         self.robohlava.moveToThread(self.th)
         self.th.started.connect(self.robohlava.run)
         self.th.start()
+        self.showFullScreen() # Full screen only when everything is done
         self.show()
+
+    @pyqtSlot(bool)
+    def terminate_close_all(self, flag):
+        if flag == True:
+            print("[TERM] Terminating and close application")
+            self.robohlava.terminate_close()
+            self.touch_screen.close()
+            time.sleep(1)
+            self.close()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Q:
+            print("[TERM] Terminating and close application")
+            self.robohlava.terminate_close()
+            self.touch_screen.close()
+            time.sleep(1)
+            self.close()
+
+
 
 
 class ImageButton(QAbstractButton):
@@ -249,6 +275,7 @@ class ImageButton(QAbstractButton):
 class TouchScreen(QWidget):
     """Touch screen window with buttons"""
     state_from_btn = pyqtSignal(str)
+    terminate_signal = pyqtSignal(bool)
 
     def __init__(self):
         super().__init__()
@@ -309,7 +336,7 @@ class TouchScreen(QWidget):
         self.setLayout(self.ui_layout_v)
         #self.resize(1920, 1080)
         self.move(0, 1100)
-        #self.showFullScreen() # Full screen only when everything is done
+        self.showFullScreen() # Full screen only when everything is done
         self.show()
 
 
@@ -320,15 +347,17 @@ class TouchScreen(QWidget):
             if btn.isChecked():
                 btn.setChecked(False)
         self.group.setExclusive(True)
-        self.label_text_change()
+        self.label_text_change(config.info_label_game_text)
 
     def btns_disable(self):
         for btn in self.group.buttons():
             btn.setDisabled(True)
+        self.label_text_change(config.info_label_default_text)
 
     def btns_enable(self):
         for btn in self.group.buttons():
             btn.setEnabled(True)
+        self.label_text_change(config.info_label_game_text)
 
     def btns_active_1(self):
         for btn in self.group.buttons():
@@ -358,6 +387,12 @@ class TouchScreen(QWidget):
                 self.btns_active_1()
         else:
             self.label_text_change()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Q:
+            print("[TERM] Terminating and close application from TouchScreen window")
+            self.terminate_signal.emit(True)
+
 
 
 if __name__ == '__main__':

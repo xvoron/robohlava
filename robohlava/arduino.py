@@ -27,6 +27,7 @@ LB = Low Byte
 
 import serial
 import time
+import robohlava.config as conf
 
 START_BYTE = 55
 STOP_BYTE = 110
@@ -49,7 +50,7 @@ class Arduino():
         """
         try:
             if platform == "windows":
-                self.arduino = serial.Serial('COM4', 115200, timeout=0)  # Windows
+                self.arduino = serial.Serial(conf.arduino_com_port, 115200, timeout=0)  # Windows
             if platform == "linux":
                 self.arduino = serial.Serial('/dev/ttyACM0', 115200, timeout=0)  # Linux
             info("initialization complete.")
@@ -198,6 +199,7 @@ class Arduino():
 
     def terminate(self):
         self.arduino.close()
+        print("[TERM] Arduino is closed")
 
 
 

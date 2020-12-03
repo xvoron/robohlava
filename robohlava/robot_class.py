@@ -117,8 +117,11 @@ class Robohlava():
         pass
 
     def terminate(self):
-            self.turn(conf.arduino_base[0], conf.arduino_base[1])
             time.sleep(2)
+            self.turn(conf.arduino_base[0], conf.arduino_base[1])
+            print("[TERM] Turn to base position")
+            time.sleep(2)
+            print("[TERM] Terminate Arduino, Voice started")
             if self.flag_arduino:
                 self.arduino.terminate()
             if self.flag_voice:
@@ -127,17 +130,6 @@ class Robohlava():
 
 if __name__ == "__main__":
     print("Modul  | {0} | ---> executed".format(__name__))
-    robohlava = Robohlava()
-    i = 0
-    text = "ahoj"
-    while True:
-        print(i)
-        robohlava.voice.say(text)
-        i += 2
-        if i > 100:
-            break
-        time.sleep(2)
-    robohlava.terminate()
 
 else:
     print("Modul  | {0} | ---> imported".format(__name__))

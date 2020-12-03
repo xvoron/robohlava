@@ -12,7 +12,10 @@ class State:
         self.voice_padding_constant = conf.voice_padding_constant
         self.voice_padding = conf.voice_padding_init
         self.name = type(self).__name__
-        self.text = self.text_processor.run(self.name)
+        try:
+            self.text = self.text_processor.run(self.name)
+        except:
+            self.text = ''
 
     def __repr__(self):
         return str(self.name)

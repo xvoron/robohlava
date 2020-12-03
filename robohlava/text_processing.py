@@ -20,13 +20,18 @@ class Textprocessor:
 
         if platform.system() == "Windows":
             json_path = base_dir + r"\json\text.json"
+            rur_path = base_dir + r"\txt_file\rur.txt"
         else:
             json_path = base_dir + r"/json/text.json"
+            rur_path = base_dir + r"/txt_file/rur.txt"
 
         print("path", json_path)
-        with open(json_path, 'r', encoding='utf-8') as f:
-            self.data = json.load(f)
-            f.close()
+        with open(json_path, 'r', encoding='utf-8') as f1:
+            self.data = json.load(f1)
+            f1.close()
+        with open(rur_path, 'r', encoding='utf-8') as f2:
+            self.rur_text = f2.read()
+            f2.close()
 
         self.text = []
         self.states_functions = {'Init'     : self.init_process,
@@ -64,7 +69,7 @@ class Textprocessor:
         return self.data['games']
 
     def book_process(self):
-        return self.data['book']
+        return (self.data['book'], self.rur_text)
 
     def professor_process(self):
         return self.data['professor']

@@ -30,6 +30,12 @@ Simply run command from command line:
 
     $pip install -r packages2install.txt
 
+# Touch screen initialization
+1. Go to "Ovladaci panaly->Hardware a zvuk"
+2. Click to "Nastaveni Tablet PC"
+3. In Configuration click "Nastaveni"
+4. Click Enter and click on touch display
+
 # Files
 
 | Directory/File | Description                         |

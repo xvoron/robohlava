@@ -50,16 +50,19 @@ class Camera:
     def take_frame(self):
         while True:
             if self.real_sense_on:
-                frame = self.pipeline.wait_for_frames()
-                self.depth_frame = frame.get_depth_frame()
-                self.rgb_frame = frame.get_color_frame()
-                if not self.depth_frame or not self.rgb_frame:
-                    """Return last image"""
+                try:
+                    frame = self.pipeline.wait_for_frames()
+                    self.depth_frame = frame.get_depth_frame()
+                    self.rgb_frame = frame.get_color_frame()
+                    if not self.depth_frame or not self.rgb_frame:
+                        """Return last image"""
+                        continue
+                    else:
+                        """frames"""
+                        self.frame_process()
+                        break
+                except:
                     continue
-                else:
-                    """frames"""
-                    self.frame_process()
-                    break
             else:
                 ret, frame = self.cap.read()
                 if not ret:
@@ -82,9 +85,11 @@ class Camera:
     def terminate(self):
         if self.real_sense_on:
             self.pipeline.stop()
+            cv2.destroyAllWindows()
         else:
             self.cap.release()
             cv2.destroyAllWindows()
+        print("[TERM] Camera is stoped")
 
 
 if __name__ == "__main__":

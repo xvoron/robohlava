@@ -319,7 +319,6 @@ class Games(State):
         else:
             text = ['']
             self.stage_add()
-
         return text
 
 
@@ -337,15 +336,25 @@ class Game(State):
 class Book(Game):
     def __init__(self, *args):
         super().__init__(*args)
+        self.text, self.rur_text = self.text_processor.run(self.name)
+
         self.transition1 = Transition(target_state=Games,
                                     conditions=['local_timer',
                                         conf.timer_book2games],
                                     state={'timer': self.timer},
-                                    actions={'voice': self.text['fail']})
+                                    actions={'voice': self.text['cancel']})
 
         self.transition2 = Transition(target_state=Games,
                                     conditions=['end'],
                                     state=None)
+
+        self.transition3 = Transition(target_state=Games,
+                                    conditin=['cancel'],
+                                    actions={'voice':self.text['cancel']})
+        self.transition4 = Transition(target_state=Games,
+                                    condition=['local_timer', conf.timer_book2game],
+                                    state={'timer': self.timer},
+                                    actions={})
 
         self.transitions.append(self.transition1)
 
@@ -358,11 +367,22 @@ class Book(Game):
 
     def get_action(self):
         actions = {}
-        if self.timer() > conf.timer_book_start:
-            actions['img_book'] = True
+        if self.timer() > conf.timer_book_start():
+            action['img_book'] = False
+            action['voice'] = rur_process(self.rur_text) + self.text['end']
         self.timer_next()
         return actions
 
+    def rur_process(text):
+        text_max = conf.text_rur_max
+        text_padding = conf.text_rur_padding
+        text_length = conf.text_rur_length
+        index_start = random.randint(text_padding, text_max-text_padding)
+        index_start = index_start +  text[index_start:].find('.')
+        index_end = index_start + text_length + text[index_start+text_length:].find('.')
+        text = text[index_start+1:index_end+2]
+        text = re.sub('[\n]', ' ', text)
+        return text
 
 
 class Yolo(Game):

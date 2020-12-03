@@ -1,13 +1,12 @@
 numpy
 scipy
+Cython
 collections-extended
-Pillow==2.2.2
+Pillow
 regex
 pyserial
 pyttsx3
-opencv-python3
 PyQt5
 pyserial
 pytesseract
-pyrealsense
 pyrealsense2

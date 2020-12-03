@@ -44,15 +44,11 @@ class Voice:
 
     def terminate(self):
         self.engine.stop()
+        print("[TERM] Voice is stoped")
 
 
 if __name__ == "__main__":
     print("Modul  | {0} | ---> executed".format(__name__))
-    import time
-    voice = Voice()
-    time.sleep(1)
-    voice.say("ahoj jak se maš?")
-    voice.terminate()
 
 else:
     print("Modul  | {0} | ---> imported".format(__name__))
