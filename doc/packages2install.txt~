@@ -1,0 +1,12 @@
+numpy
+scipy
+Cython
+collections-extended
+Pillow
+regex
+pyserial
+pyttsx3
+PyQt5
+pyserial
+pytesseract
+pyrealsense2

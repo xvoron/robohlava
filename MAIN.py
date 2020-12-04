@@ -109,11 +109,14 @@ class MainWindow(QWidget):
         self.label_depth.setPixmap(QPixmap.fromImage(img_depth.scaled(640, 480,
             Qt.KeepAspectRatio)))
         self.label_mini.setPixmap(QPixmap.fromImage(img_mini.scaled(640, 480, Qt.KeepAspectRatio)))
+
+        if self.actual_state in ["Book", "Information"]:
+            text_info = ''
         self.info_label.setText(text_info)
 
     @pyqtSlot(str)
     def process_state_from_robohlava(self, state):
-        list_of_possible_states =['Games', "Book", "Yolo", "Professor", "Noname"]
+        list_of_possible_states =['Games', "Book", "Yolo", "Professor", "Information"]
         self.actual_state = state
         print("[INFO] Main window state robohlava:", state)
         if state == 'Games':
@@ -121,11 +124,12 @@ class MainWindow(QWidget):
             print("[INFO] RESET BUTTONS")
             self.touch_screen.btns_reset()
             self.robohlava.flags = (False, False, False, False, False)
-        elif state in list_of_possible_states:
+        #elif state in ["Book", "Information"]:
             #self.touch_screen.blockSignals(True)
-            pass
+            #self.touch_screen.btns_disable()
         else:
             self.touch_screen.btns_disable()
+            self.touch_screen.blockSignals(True)
 
     @pyqtSlot(str)
     def process_state_from_touchscreen(self, state):
@@ -135,7 +139,7 @@ class MainWindow(QWidget):
             (book, professor, yolo, noname, cancel)
         """
         print("[INFO] Main window state touchscreen:", state)
-        list_of_possible_states =['Games', "Book", "Yolo", "Professor", "Noname"]
+        list_of_possible_states =['Games', "Book", "Yolo", "Professor", "Information"]
         print(f"self.actual_state {self.actual_state}")
         if state and (self.actual_state in list_of_possible_states):
             if int(state) == 0:
@@ -221,7 +225,7 @@ class MainWindow(QWidget):
         self.robohlava.moveToThread(self.th)
         self.th.started.connect(self.robohlava.run)
         self.th.start()
-        #self.showFullScreen() # Full screen only when everything is done
+        self.showFullScreen() # Full screen only when everything is done
         self.show()
 
     @pyqtSlot(bool)
@@ -336,7 +340,7 @@ class TouchScreen(QWidget):
         self.setLayout(self.ui_layout_v)
         #self.resize(1920, 1080)
         self.move(0, 1100)
-        #self.showFullScreen() # Full screen only when everything is done
+        self.showFullScreen() # Full screen only when everything is done
         self.show()
 
 
