@@ -342,33 +342,31 @@ class Book(Game):
         self.text, self.rur_text = self.text_processor.run(self.name)
 
 
-        self.transition3 = Transition(target_state=Games,
+        self.transition1 = Transition(target_state=Games,
                                     conditin=['cancel'],
                                     actions={'voice':self.text['cancel']})
-        self.transition4 = Transition(target_state=Games,
-                                    condition=['local_timer', conf.timer_book2game],
-                                    state={'timer': self.timer},
+        self.transition2 = Transition(target_state=Games,
+                                    condition=['stage',
+                                        conf.stage_book2games],
+                                    state={'stage': self.stage},
                                     actions={})
 
-        self.transitions.append(self.transition3)
-        self.transitions.append(self.transition5)
+        self.transitions.append(self.transition1)
+        self.transitions.append(self.transition2)
 
 
     def get_entry_action(self):
         self.timer_reset()
         self.stage_reset()
-        text = random.sample(self.text['other'], 1)
+        text = text['entry']
         return {'voice': text}
 
     def get_action(self):
         actions = {}
-        if self.timer() > conf.timer_book_start():
-            action['img_book'] = False
-            action['voice'] = rur_process(self.rur_text) + self.text['end']
-        self.timer_next()
-
         actions['track'] = True
         actions['img_face'] = True
+        actions['voice'] = self.voice()
+        self.timer_next()
         return actions
 
     def rur_process(text):
@@ -380,6 +378,15 @@ class Book(Game):
         index_end = index_start + text_length + text[index_start+text_length:].find('.')
         text = text[index_start+1:index_end+2]
         text = re.sub('[\n]', ' ', text)
+        return text
+
+    @State.voice_decorator
+    def voice(self):
+        if self.stage() == 0:
+            text = self.rur_process(self.rur_text) + self.text['end']
+            self.stage_add()
+        elif self.stage() == 1:
+            self.stage_add()
         return text
 
 
@@ -431,16 +438,42 @@ class Professor(Game):
 
     def get_action(self):
         actions = {}
-        if self.stage() == 0:
-            actions['voice'] = self.text['stage1']
-        elif self.stage() == 1:
-            actions['voice'] = self.text['stage2']
-            action['
-        elif self.stage() == 2:
-            actions['voice'] = self.text['stage3']
+        actions['track'] = True
+        actions['img_face'] = True
+        actions['voice'] = self.voice()
 
-        self.stage_add()
         return actions
+
+    @State.voice_decorator
+    def voice(self):
+        if self.stage() == 0:
+            text = self.text['stage0'] #
+            self.stage_add()
+        elif self.stage() == 1:
+            text = self.text['stage1']
+            self.stage_add()
+
+        elif self.stage() == 2:
+            text = self.text['stage2']
+            self.stage_add()
+
+        elif self.stage() == 3:
+            text = self.text['stage3']
+            self.stage_add()
+
+        elif self.stage() == 4:
+            text = self.text['stage4']
+            self.stage_add()
+
+        elif self.stage() == 5:
+            text = self.text['stage5']
+            self.stage_add()
+
+        elif self.stage() == 6:
+            text = self.text['stage6']
+            self.stage_add()
+
+        return text
 
 
 class Information(Game):
@@ -461,16 +494,26 @@ class Information(Game):
         self.transitions.append(self.transition1)
         self.transitions.append(self.transition2)
 
-    def get_action(self):
-
-        actions = {}
-        if self.stage() == 0:
-            actions['voice'] = self.text['stage1']
-        elif self.stage() == 1:
-            actions['voice'] = self.text['stage2']
-        elif self.stage() == 2:
-            actions['voice'] = self.text['stage3']
-
-        self.stage_add()
+    def get_entry_action(self):
+        self.timer_reset()
+        self.stage_reset()
+        actions = {'voice': random.sample(self.text['entry'],1)}
         return actions
 
+    def get_action(self):
+        actions = {}
+        actions['track'] = True
+        actions['img_face'] = True
+        actions['voice'] = self.voice()
+
+        return actions
+
+    @State.voice_decorator
+    def voice(self):
+        if self.stage() == 0:
+            text = random.sample(self.text['general'], 1)
+            self.stage_add()
+        elif self.stage() == 1:
+            self.stage_add()
+
+        return text

@@ -112,8 +112,9 @@ timer_yolo2games = 150
 #--------------------------------------------------------------
 stage_greeting2games = 4
 games_maximum_stage_choice_btn = 5
-stage_professor2games = 4
+stage_professor2games = 7
 stage_information2games = 4
+stage_book2games = 2
 
 
 #--------------------------------------------------------------
