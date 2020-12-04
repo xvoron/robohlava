@@ -25,7 +25,8 @@ class Textprocessor:
             json_path = base_dir + r"/json/text.json"
             rur_path = base_dir + r"/txt_file/rur.txt"
 
-        print("path", json_path)
+        print("[INFO] PATH", json_path)
+
         with open(json_path, 'r', encoding='utf-8') as f1:
             self.data = json.load(f1)
             f1.close()
@@ -34,16 +35,16 @@ class Textprocessor:
             f2.close()
 
         self.text = []
-        self.states_functions = {'Init'     : self.init_process,
-                                 'Wait'     : self.wait_process,
-                                 'Search'   : self.search_process,
-                                 'Sleep'    : self.sleep_process,
-                                 'Greeting' : self.greeting_process,
-                                 'Games'    : self.games_process,
-                                 'Book'     : self.book_process,
-                                 'Professor': self.professor_process,
-                                 'Yolo'     : self.yolo_process,
-                                 'Noname'   : self.noname_process}
+        self.states_functions = {'Init'         : self.init_process,
+                                 'Wait'         : self.wait_process,
+                                 'Search'       : self.search_process,
+                                 'Sleep'        : self.sleep_process,
+                                 'Greeting'     : self.greeting_process,
+                                 'Games'        : self.games_process,
+                                 'Book'         : self.book_process,
+                                 'Professor'    : self.professor_process,
+                                 'Yolo'         : self.yolo_process,
+                                 'Information'  : self.information_process}
 
 
     def run(self, current_state):
@@ -77,8 +78,8 @@ class Textprocessor:
     def yolo_process(self):
         return self.data['yolo']
 
-    def noname_process(self):
-        return self.data['noname']
+    def information_process(self):
+        return self.data['information']
 
 
 if __name__ == "__main__":

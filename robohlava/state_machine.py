@@ -268,9 +268,10 @@ class Games(State):
                                     conditions=['and', [['local_timer',
                                         conf.game_start_delay], 'yolo']],
                                     state={'timer': self.timer})
-        self.transition4 = Transition(target_state=Noname,
+        self.transition4 = Transition(target_state=Information,
                                     conditions=['and', [['local_timer',
-                                        conf.game_start_delay], 'noname']],
+                                        conf.game_start_delay],
+                                        'information']],
                                     state={'timer': self.timer})
         self.transition5 = Transition(target_state=Wait,
                                     conditions=['neg', 'person'],
@@ -333,20 +334,13 @@ class Game(State):
                                         conf.button_cancel_text})
         self.transitions.append(self.transition)
 
+
+
 class Book(Game):
     def __init__(self, *args):
         super().__init__(*args)
         self.text, self.rur_text = self.text_processor.run(self.name)
 
-        self.transition1 = Transition(target_state=Games,
-                                    conditions=['local_timer',
-                                        conf.timer_book2games],
-                                    state={'timer': self.timer},
-                                    actions={'voice': self.text['cancel']})
-
-        self.transition2 = Transition(target_state=Games,
-                                    conditions=['end'],
-                                    state=None)
 
         self.transition3 = Transition(target_state=Games,
                                     conditin=['cancel'],
@@ -356,7 +350,8 @@ class Book(Game):
                                     state={'timer': self.timer},
                                     actions={})
 
-        self.transitions.append(self.transition1)
+        self.transitions.append(self.transition3)
+        self.transitions.append(self.transition5)
 
 
     def get_entry_action(self):
@@ -371,6 +366,9 @@ class Book(Game):
             action['img_book'] = False
             action['voice'] = rur_process(self.rur_text) + self.text['end']
         self.timer_next()
+
+        actions['track'] = True
+        actions['img_face'] = True
         return actions
 
     def rur_process(text):
@@ -417,10 +415,62 @@ class Yolo(Game):
 class Professor(Game):
     def __init__(self, *args):
         super().__init__(*args)
+        self.transition1 = Transition(target_state=Games,
+                                    condition=['stage',
+                                        conf.stage_professor2games],
+                                    state={'stage': self.stage},
+                                    actions={})
+
+        self.transition2 = Transition(target_state=Games,
+                                    condition=['cancel'],
+                                    state={},
+                                    actions={'voice': self.text['cancel']})
+
+        self.transitions.append(self.transition1)
+        self.transitions.append(self.transition2)
+
+    def get_action(self):
+        actions = {}
+        if self.stage() == 0:
+            actions['voice'] = self.text['stage1']
+        elif self.stage() == 1:
+            actions['voice'] = self.text['stage2']
+            action['
+        elif self.stage() == 2:
+            actions['voice'] = self.text['stage3']
+
+        self.stage_add()
+        return actions
 
 
-class Noname(Game):
+class Information(Game):
     def __init__(self, *args):
         super().__init__(*args)
 
+        self.transition1 = Transition(target_state=Games,
+                                    condition=['stage',
+                                        conf.stage_information2games],
+                                    state={'stage': self.stage},
+                                    actions={})
+
+        self.transition2 = Transition(target_state=Games,
+                                    condition=['cancel'],
+                                    state={},
+                                    actions={'voice': self.text['cancel']})
+
+        self.transitions.append(self.transition1)
+        self.transitions.append(self.transition2)
+
+    def get_action(self):
+
+        actions = {}
+        if self.stage() == 0:
+            actions['voice'] = self.text['stage1']
+        elif self.stage() == 1:
+            actions['voice'] = self.text['stage2']
+        elif self.stage() == 2:
+            actions['voice'] = self.text['stage3']
+
+        self.stage_add()
+        return actions
 

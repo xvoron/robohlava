@@ -12,9 +12,9 @@
 #--------------------------------------------------------------
 # FLAGS
 #--------------------------------------------------------------
-flag_arduino = True
+flag_arduino = False
 flag_voice = True
-flag_realsense = True
+flag_realsense = False
 
 #--------------------------------------------------------------
 # CONSTANTS
@@ -54,7 +54,6 @@ greeting_yolo_ratio = 1
 
 
 # Games
-games_maximum_stage_choice_btn = 5
 games_change_person_text = ['Proč jseš tak pomaly, tak zkusím nekoho \
         jíneho ... ale nevylučuju, že to znovu nebudeš ty ...']
 
@@ -90,7 +89,7 @@ button_cancel_text = ["Už tě to nebaví? Vyber si neco jineho..."]
 #--------------------------------------------------------------
 # TIMERS
 #--------------------------------------------------------------
-timer_init2wait = 400
+timer_init2wait = 50 # 400
 timer_wait2search = 200
 timer_search2sleep = 200
 timer_greeting2games = 200
@@ -112,6 +111,10 @@ timer_yolo2games = 150
 # STAGES
 #--------------------------------------------------------------
 stage_greeting2games = 4
+games_maximum_stage_choice_btn = 5
+stage_professor2games = 4
+stage_information2games = 4
+
 
 #--------------------------------------------------------------
 # COLORS BGR format for openCV

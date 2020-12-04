@@ -31,7 +31,7 @@ class RobohlavaCore:
             4. book
             5. professor
             6. yolo
-            7. noname
+            7. information
             8. cancel
 
         PyQt communication:
@@ -55,15 +55,15 @@ class RobohlavaCore:
 
     """
 
-    triggers_list = {'end'      : False,
-                    'person'    : False,
-                    'object'    : False,
-                    'timer'     : False,
-                    'book'      : False,
-                    'professor' : False,
-                    'yolo'      : False,
-                    'noname'    : False,
-                    'cancel'    : False
+    triggers_list = {'end'          : False,
+                    'person'        : False,
+                    'object'        : False,
+                    'timer'         : False,
+                    'book'          : False,
+                    'professor'     : False,
+                    'yolo'          : False,
+                    'information'   : False,
+                    'cancel'        : False
                     }
 
     actions_list = {'track'             : False,
@@ -181,7 +181,7 @@ class RobohlavaCore:
                 self.triggers['book'] = value[0]
                 self.triggers['professor'] = value[1]
                 self.triggers['yolo'] = value[2]
-                self.triggers['noname'] = value[3]
+                self.triggers['information'] = value[3]
                 self.triggers['cancel'] = value[4]
 
             if key == 'person':
@@ -203,15 +203,15 @@ class RobohlavaCore:
                                 self.count_person.reset()
                             else:
                                 self.count_person += 1
-            if key == 'book_text':
-                if self.state_machine.current_state.name == 'Book':
-                    if value is not None:
-                        text = self.state_machine.current_state.text['success'][0].format(value)
-                        self.robot.say(text)
-                        self.voice_text = text
-                        self.triggers['end'] = True
-                    else:
-                        self.triggers['end'] = False
+            #if key == 'book_text':
+            #    if self.state_machine.current_state.name == 'Book':
+            #        if value is not None:
+            #            text = self.state_machine.current_state.text['success'][0].format(value)
+            #            self.robot.say(text)
+            #            self.voice_text = text
+            #            self.triggers['end'] = True
+            #        else:
+            #            self.triggers['end'] = False
 
             if key == 'objects':
                 if self.state_machine.current_state.name in ['Yolo', 'Greeting']:

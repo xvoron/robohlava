@@ -221,7 +221,7 @@ class MainWindow(QWidget):
         self.robohlava.moveToThread(self.th)
         self.th.started.connect(self.robohlava.run)
         self.th.start()
-        self.showFullScreen() # Full screen only when everything is done
+        #self.showFullScreen() # Full screen only when everything is done
         self.show()
 
     @pyqtSlot(bool)
@@ -336,7 +336,7 @@ class TouchScreen(QWidget):
         self.setLayout(self.ui_layout_v)
         #self.resize(1920, 1080)
         self.move(0, 1100)
-        self.showFullScreen() # Full screen only when everything is done
+        #self.showFullScreen() # Full screen only when everything is done
         self.show()
 
 
