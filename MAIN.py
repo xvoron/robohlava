@@ -246,8 +246,6 @@ class MainWindow(QWidget):
             self.close()
 
 
-
-
 class ImageButton(QAbstractButton):
     """Custom Bitmap Button"""
     def __init__(self, pixmap, pixmap_toggled, ID, info_text="info", parent=None):

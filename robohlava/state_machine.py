@@ -359,7 +359,6 @@ class Book(Game):
                                     conditions=['stage', conf.stage_book2games],
                                     state={'stage': self.stage},
                                     actions=None)
-                                    
 
         self.transitions.append(self.transition1)
         self.transitions.append(self.transition2)

@@ -129,7 +129,7 @@ color_yolo = (18, 78, 35)               ##234e12
 color_mini = (18, 78, 35)               ##234e12 
 color_center_circle = (36, 155, 69)     ##459b24
 color_tracking_person = (0, 0, 224)     ##E00000
-color_person = (255, 0, 0)             ##234e12
+color_person = (255, 0, 0)              ##234e12
 
 # Colors lib:
 # (12, 20, 146)              ##92140C
